@@ -11,7 +11,7 @@
   "quality": "720p",
   "baseUrl": "https://vidapi.xyz/",
   "searchBaseUrl": "https://vidapi.xyz/api/search?query=%s",
-  "scriptUrl": "https://soramodules.pages.dev/vidapi/vidapi.js",
+  "scriptUrl": "https://raw.githubusercontent.com/VizorScripts/vidapi/refs/heads/main/VidAPI-script.js",
   "asyncJS": true,
   "streamAsyncJS": true
 }
