@@ -1,0 +1,17 @@
+{
+  "sourceName": "VidAPI",
+  "iconUrl": "https://vidapi.xyz/favicon.ico",
+  "author": {
+    "name": "VidAPI Team",
+    "icon": "https://vidapi.xyz/favicon.ico"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://vidapi.xyz/",
+  "searchBaseUrl": "https://vidapi.xyz/api/search?query=%s",
+  "scriptUrl": "https://soramodules.pages.dev/vidapi/vidapi.js",
+  "asyncJS": true,
+  "streamAsyncJS": true
+}
