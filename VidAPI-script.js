@@ -1,101 +1,94 @@
 // VidAPI Module Script
 // Version: 1.0
 // Author: vizor
-
-/**
- * VidAPI Scraper Module for Sora
- * This module implements the core functions to search for content,
- * fetch detailed metadata, and retrieve streaming sources from VidAPI.
- *
- * Endpoints assumed:
- *  - Search: GET https://vidapi.xyz/api/search?query=<search-term>
- *  - Details: GET https://vidapi.xyz/api/details?id=<item-id>
- *  - Content: GET https://vidapi.xyz/api/content?id=<item-id>
- *
- * Adjust the endpoint paths if needed.
- */
-
-// Base URL as defined in the JSON configuration.
 const BASE_URL = "https://vidapi.xyz/";
 
 /**
- * Search for shows or movies.
- * @param {string} query - The search term.
- * @returns {Promise<Array>} A promise that resolves to an array of search result objects.
+ * Fetch helper to handle network errors and ensure valid JSON responses.
+ */
+async function fetchJson(url) {
+  try {
+    console.log(`Fetching: ${url}`); // Debugging log
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const json = await response.json();
+    console.log("API Response:", json); // Debugging log
+    return json;
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return null;
+  }
+}
+
+/**
+ * Search function for fetching shows/movies.
+ * @param {string} query - Search term.
+ * @returns {Promise<Array>} List of search results.
  */
 async function search(query) {
   const url = `${BASE_URL}api/search?query=${encodeURIComponent(query)}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Network error during search.");
-    }
-    const data = await res.json();
-    // Map the response data to the Sora expected format.
-    return data.results.map(item => ({
-      id: item.id,
-      title: item.title,
-      description: item.description,
-      thumbnail: item.thumbnail,
-      year: item.year
-    }));
-  } catch (err) {
-    console.error("Search error:", err);
+  const data = await fetchJson(url);
+  
+  if (!data || !data.results) {
+    console.error("Invalid search response:", data);
     return [];
   }
+
+  return data.results.map(item => ({
+    id: item.id || item._id,  // Fallback if API uses _id
+    title: item.title || item.name, // Some APIs use `name`
+    description: item.description || "",
+    thumbnail: item.thumbnail || item.image || "",
+    year: item.year || "Unknown"
+  }));
 }
 
 /**
- * Get details of a specific show or movie.
- * @param {string} id - The identifier of the item.
- * @returns {Promise<Object>} A promise that resolves to an object with detailed metadata.
+ * Fetch details of a specific show/movie.
+ * @param {string} id - Unique ID of the content.
+ * @returns {Promise<Object>} Detailed metadata.
  */
 async function details(id) {
   const url = `${BASE_URL}api/details?id=${encodeURIComponent(id)}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Network error during details fetch.");
-    }
-    const data = await res.json();
-    return {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      cast: data.cast,
-      genres: data.genres,
-      releaseDate: data.release_date
-    };
-  } catch (err) {
-    console.error("Details error:", err);
+  const data = await fetchJson(url);
+  
+  if (!data || !data.id) {
+    console.error("Invalid details response:", data);
     return {};
   }
+
+  return {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    cast: data.cast || [],
+    genres: data.genres || [],
+    releaseDate: data.release_date || "Unknown"
+  };
 }
 
 /**
- * Get streaming sources for a specific show or movie.
- * @param {string} id - The identifier of the item.
- * @returns {Promise<Array>} A promise that resolves to an array of stream source objects.
+ * Fetch streaming sources for a specific show/movie.
+ * @param {string} id - Unique ID of the content.
+ * @returns {Promise<Array>} List of streaming sources.
  */
 async function content(id) {
   const url = `${BASE_URL}api/content?id=${encodeURIComponent(id)}`;
-  try {
-    const res = await fetch(url);
-    if (!res.ok) {
-      throw new Error("Network error during content fetch.");
-    }
-    const data = await res.json();
-    // Map each stream to include its URL, quality, and type.
-    return data.streams.map(stream => ({
-      url: stream.url,
-      quality: stream.quality || "720p", // default to 720p if not provided
-      type: stream.type || "HLS"         // default to HLS if not provided
-    }));
-  } catch (err) {
-    console.error("Content error:", err);
+  const data = await fetchJson(url);
+  
+  if (!data || !data.streams) {
+    console.error("Invalid content response:", data);
     return [];
   }
+
+  return data.streams.map(stream => ({
+    url: stream.url,
+    quality: stream.quality || "720p",
+    type: stream.type || "HLS"
+  }));
 }
 
-// Export functions so Sora can invoke them.
+// Export functions for Sora.
 export { search, details, content };
