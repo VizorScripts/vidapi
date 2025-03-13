@@ -2,16 +2,16 @@
   "sourceName": "VidAPI",
   "iconUrl": "https://vidapi.xyz/favicon.ico",
   "author": {
-    "name": "VidAPI Team",
+    "name": "vizor",
     "icon": "https://vidapi.xyz/favicon.ico"
   },
-  "version": "1.0.1",
+  "version": "1.0.4",
   "language": "English",
   "streamType": "HLS",
   "quality": "720p",
   "baseUrl": "https://vidapi.xyz/",
   "searchBaseUrl": "https://vidapi.xyz/ani-api/search?q=%s&page=1",
-  "scriptUrl": "https://raw.githubusercontent.com/VizorScripts/vidapi/main/VidAPI-script.js",
+  "scriptUrl": "https://raw.githubusercontent.com/YourGitHubUsername/YourRepo/main/VidAPI-script.js",
   "asyncJS": true,
   "streamAsyncJS": true
 }
