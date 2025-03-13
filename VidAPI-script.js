@@ -27,27 +27,22 @@
         })) : (console.error('Invalid search response:', data), []);
     }
 
-    async function details(id) {
-        const url = `${BASE_URL}api/details?id=${encodeURIComponent(id)}`;
+    async function details(linkUrl) {
+        const url = `${BASE_URL}ani-api/anime?url=${encodeURIComponent(linkUrl)}`;
         const data = await fetchJson(url);
-        return data && data.id ? {
-            id: data.id,
+        return data && data.title ? {
+            id: data.id || linkUrl,
             title: data.title,
-            description: data.description,
+            description: data.description || 'No description available',
             cast: data.cast || [],
             genres: data.genres || [],
             releaseDate: data.release_date || 'Unknown'
         } : (console.error('Invalid details response:', data), {});
     }
 
-    async function content(id) {
-        const url = `${BASE_URL}api/content?id=${encodeURIComponent(id)}`;
-        const data = await fetchJson(url);
-        return data && data.streams ? data.streams.map(stream => ({
-            url: stream.url,
-            quality: stream.quality || '720p',
-            type: stream.type || 'HLS'
-        })) : (console.error('Invalid content response:', data), []);
+    async function content(linkUrl, episode) {
+        const url = `${BASE_URL}embed/anime/${encodeURIComponent(linkUrl)}-${encodeURIComponent(episode)}`;
+        return [{ url, quality: '720p', type: 'HLS' }];
     }
 
     function extractStreamUrl(html) {
