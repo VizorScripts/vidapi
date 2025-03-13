@@ -16,7 +16,7 @@
     }
 
     async function search(query) {
-        const url = `${BASE_URL}api/search?query=${encodeURIComponent(query)}`;
+        const url = `${BASE_URL}ani-api/search?q=${encodeURIComponent(query)}&page=1`;
         const data = await fetchJson(url);
         return data && data.results ? data.results.map(item => ({
             id: item.id || item._id,
