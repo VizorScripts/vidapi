@@ -18,7 +18,7 @@
     async function search(query) {
         const url = `${BASE_URL}ani-api/search?q=${encodeURIComponent(query)}&page=1`;
         const data = await fetchJson(url);
-        return data && data.results ? data.results.map(item => ({
+        return data && data.results && Array.isArray(data.results) ? data.results.map(item => ({
             id: item.id || item._id,
             title: item.title || item.name,
             description: item.description || '',
@@ -52,13 +52,16 @@
             return JSON.stringify({ stream: 'N/A' });
         }
         
-        const unpackedScript = unpack(scriptMatch[1]);
-        
-        const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
-        const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
-        
-        console.log(stream);
-        return stream;
+        try {
+            const unpackedScript = eval(scriptMatch[1]);
+            const streamMatch = unpackedScript.match(/(?<=file:")[^"]+/);
+            const stream = streamMatch ? streamMatch[0].trim() : 'N/A';
+            console.log(stream);
+            return stream;
+        } catch (e) {
+            console.error("Error unpacking script:", e);
+            return JSON.stringify({ stream: 'N/A' });
+        }
     }
 
     export { search, details, content, extractStreamUrl };
